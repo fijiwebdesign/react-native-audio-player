@@ -40,7 +40,7 @@ export default class MusicPlayer extends React.Component {
 
 			this.loadAudioAtIndex(0)
 		} catch (error) {
-      this.handlerrorError(e)
+      this.handleError(error)
 		}
 	}
 
@@ -65,7 +65,7 @@ export default class MusicPlayer extends React.Component {
 				playbackInstance
 			})
 		} catch (error) {
-      this.handlerrorError(e)
+      this.handleError(error)
 		}
 	}
 
