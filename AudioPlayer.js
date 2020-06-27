@@ -26,7 +26,6 @@ export class AudioPlayer extends React.Component {
   }
 
   async componentDidMount() {
-    console.log('Loading component', this.playlist)
     try {
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
@@ -46,12 +45,11 @@ export class AudioPlayer extends React.Component {
 
   async loadAudioAtIndex(index) {
     const { isPlaying, volume } = this.state
+    const track = this.playlist[index]
 
     try {
       const playbackInstance = new Audio.Sound()
-      const source = {
-        uri: this.playlist[index].uri
-      }
+      const source = track.media // { uri } | require()
 
       const status = {
         shouldPlay: isPlaying,
@@ -74,6 +72,21 @@ export class AudioPlayer extends React.Component {
       playbackStatus: status
     })
   }
+
+  play = async () => {
+    const { playbackInstance } = this.state
+    return playbackInstance && await playbackInstance.playAsync()
+  }
+
+  pause = async () => {
+    const { playbackInstance } = this.state
+    return playbackInstance && await playbackInstance.pauseAsync()
+  }
+
+  stop = async () => {
+    const { playbackInstance } = this.state
+    return playbackInstance && await playbackInstance.stopAsync()
+  }
   
   handleError = error => {
     const { onError } = this.props
@@ -81,8 +94,10 @@ export class AudioPlayer extends React.Component {
   }
 
   handlePlayPause = async () => {
-    const { isPlaying, playbackInstance } = this.state
-    isPlaying ? await playbackInstance.pauseAsync() : await playbackInstance.playAsync()
+    const { isPlaying, currentIndex } = this.state
+    !isPlaying 
+      ? await this.play()
+      : await this.pause()
 
     return new Promise(resolve => this.setState({
       isPlaying: !isPlaying
@@ -92,24 +107,21 @@ export class AudioPlayer extends React.Component {
   handlePreviousTrack = async () => {
     let { currentIndex } = this.state
     const prevIndex = currentIndex === 0 ? this.playlist.length -1 : currentIndex-1
-    this.playTrackAtIndex(prevIndex)
+    return this.moveToTrackAtIndex(prevIndex)
   }
 
   handleNextTrack = async () => {
     let { currentIndex } = this.state
     const nextIndex = currentIndex+1 > this.playlist.length - 1 ? 0 : currentIndex+1
-    this.playTrackAtIndex(nextIndex)
+    return this.moveToTrackAtIndex(nextIndex)
   }
 
-  playTrackAtIndex = async (index) => {
+  moveToTrackAtIndex = async (index) => {
     let { isPlaying, playbackInstance } = this.state
     if (playbackInstance) {
-      await playbackInstance.stopAsync()
+      isPlaying && await this.stop()
       await playbackInstance.unloadAsync()
-      await this.loadAudioAtIndex(index)
-      try {
-        if (isPlaying) playbackInstance.playAsync()
-      } catch(e) {}
+      return this.loadAudioAtIndex(index)
     }
   }
 
