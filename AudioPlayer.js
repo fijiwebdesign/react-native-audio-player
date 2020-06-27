@@ -34,7 +34,8 @@ export class AudioPlayer extends React.Component {
         interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
         shouldDuckAndroid: true,
         staysActiveInBackground: true,
-        playThroughEarpieceAndroid: true
+        playThroughEarpieceAndroid: true,
+        ...this.props.audioMode
       })
 
       this.loadAudioAtIndex(0)
@@ -68,9 +69,15 @@ export class AudioPlayer extends React.Component {
   }
 
   onPlaybackStatusUpdate = status => {
-    this.setState({
-      playbackStatus: status
-    })
+    const { onPlaybackStatusUpdate } = this.props
+    const { isPlaying } = this.state
+    if (status) {
+      this.setState({ playbackStatus: status })
+      if (status.didJustFinish && isPlaying) {
+        this.setState({ isPlaying: false })
+      }
+      onPlaybackStatusUpdate && onPlaybackStatusUpdate(status)
+    }
   }
 
   play = async () => {
@@ -94,7 +101,7 @@ export class AudioPlayer extends React.Component {
   }
 
   handlePlayPause = async () => {
-    const { isPlaying, currentIndex } = this.state
+    const { isPlaying } = this.state
     !isPlaying 
       ? await this.play()
       : await this.pause()

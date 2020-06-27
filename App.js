@@ -56,7 +56,7 @@ export default class App extends React.Component {
   renderPlayer = player => {
     return (
       <View style={styles.container}>
-        <h1>Music Player</h1>
+        <h1>Audio Player</h1>
         {
           player.currentTrack && (
             <Image
@@ -80,6 +80,7 @@ export default class App extends React.Component {
             <Ionicons name='ios-skip-forward' size={48} color='#444' />
           </TouchableOpacity>
         </View>
+        {player.renderFileInfo()}
       </View>
     )
   }
