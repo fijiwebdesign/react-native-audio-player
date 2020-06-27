@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet, TouchableOpacity, View, Image } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import AudioPlayer from './AudioPlayer'
+import { AudioPlayer } from './AudioPlayer'
 
 const audioBookPlaylist = [
 	{
@@ -47,15 +47,6 @@ const audioBookPlaylist = [
 
 export default class App extends React.Component {
 
-  state = {
-    player: null
-  }
-
-  onRef = ref => {
-    console.log('ref', ref)
-    this.setState({ player: ref })
-  }
-
   renderPlayer = player => {
     return (
       <View style={styles.container}>
@@ -93,8 +84,7 @@ export default class App extends React.Component {
       <AudioPlayer
         style={styles.container}
         playlist={audioBookPlaylist}
-        ref={this.onRef}
-        renderPlayer={this.renderPlayer}
+        //renderPlayer={this.renderPlayer}
         onError={this.handleError}
       />
 		)
